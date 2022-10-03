@@ -1,0 +1,242 @@
+CREATE SCHEMA IF NOT EXISTS `Odnoklasniki` DEFAULT CHARACTER SET utf8 ;
+USE `Odnoklasniki` ;
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`User`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`User` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`User` (
+  `id` INT NOT NULL,
+  `login` VARCHAR(45) NULL,
+  `password` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Games`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Games` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Games` (
+  `id` INT NOT NULL,
+  `rating` VARCHAR(45) NULL,
+  `user_id` VARCHAR(45) NULL,
+  `User_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `User_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Frends`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Frends` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Frends` (
+  `id` INT NOT NULL,
+  `status` VARCHAR(45) NULL,
+  `sender_id` VARCHAR(45) NULL,
+  `recipient_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `recipient_id`),
+  INDEX `fk_Frends_User1_idx` (`recipient_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Frends_User1`
+    FOREIGN KEY (`recipient_id`)
+    REFERENCES `Odnoklasniki`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Profile`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Profile` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Profile` (
+  `id` INT NOT NULL,
+  `age` VARCHAR(45) NULL,
+  `gender` VARCHAR(45) NULL,
+  `city` VARCHAR(45) NULL,
+  `User_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `User_id`),
+  INDEX `fk_Profile_User1_idx` (`User_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Profile_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `Odnoklasniki`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Chat`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Chat` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Chat` (
+  `id` INT NOT NULL,
+  `from_id` VARCHAR(45) NULL,
+  `to_id` VARCHAR(45) NULL,
+  `body` VARCHAR(45) NULL,
+  `User_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `User_id`),
+  INDEX `fk_Chat_User1_idx` (`User_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Chat_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `Odnoklasniki`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Group`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Group` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Group` (
+  `id` INT NOT NULL,
+  `media_id` VARCHAR(45) NULL,
+  `name` VARCHAR(45) NULL,
+  `User_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `User_id`),
+  INDEX `fk_Group_User1_idx` (`User_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Group_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `Odnoklasniki`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Media`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Media` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Media` (
+  `id` INT NOT NULL,
+  `Group_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `Group_id`),
+  INDEX `fk_Media_Group1_idx` (`Group_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Media_Group1`
+    FOREIGN KEY (`Group_id`)
+    REFERENCES `Odnoklasniki`.`Group` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Category`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Category` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Category` (
+  `id` INT NOT NULL,
+  `name` VARCHAR(45) NULL,
+  `Media_id` INT NOT NULL,
+  `Media_Group_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `Media_id`, `Media_Group_id`),
+  INDEX `fk_Category_Media1_idx` (`Media_id` ASC, `Media_Group_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Category_Media1`
+    FOREIGN KEY (`Media_id` , `Media_Group_id`)
+    REFERENCES `Odnoklasniki`.`Media` (`id` , `Group_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`events`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`events` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`events` (
+  `id` INT NOT NULL,
+  `name` VARCHAR(45) NULL,
+  `Group_id` INT NOT NULL,
+  `messange` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`, `Group_id`),
+  INDEX `fk_events_Group1_idx` (`Group_id` ASC) VISIBLE,
+  CONSTRAINT `fk_events_Group1`
+    FOREIGN KEY (`Group_id`)
+    REFERENCES `Odnoklasniki`.`Group` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Games_has_User`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Games_has_User` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Games_has_User` (
+  `Games_id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `User_id` INT NOT NULL,
+  INDEX `fk_Games_has_User_User1_idx` (`User_id` ASC) VISIBLE,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_Games_has_User_Games1`
+    FOREIGN KEY (`Games_id`)
+    REFERENCES `Odnoklasniki`.`Games` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Games_has_User_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `Odnoklasniki`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`Group_has_User`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`Group_has_User` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`Group_has_User` (
+  `Group_id` INT NOT NULL,
+  `Group_User_id` INT NOT NULL,
+  `User_id` INT NOT NULL,
+  PRIMARY KEY (`Group_id`, `Group_User_id`, `User_id`),
+  INDEX `fk_Group_has_User_User1_idx` (`User_id` ASC) VISIBLE,
+  INDEX `fk_Group_has_User_Group1_idx` (`Group_id` ASC, `Group_User_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Group_has_User_Group1`
+    FOREIGN KEY (`Group_id` , `Group_User_id`)
+    REFERENCES `Odnoklasniki`.`Group` (`id` , `User_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Group_has_User_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `Odnoklasniki`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Odnoklasniki`.`User_has_Chat`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Odnoklasniki`.`User_has_Chat` ;
+
+CREATE TABLE IF NOT EXISTS `Odnoklasniki`.`User_has_Chat` (
+  `User_id` INT NOT NULL,
+  `Chat_id` INT NOT NULL,
+  `Chat_User_id` INT NOT NULL,
+  PRIMARY KEY (`User_id`, `Chat_id`, `Chat_User_id`),
+  INDEX `fk_User_has_Chat_Chat1_idx` (`Chat_id` ASC, `Chat_User_id` ASC) VISIBLE,
+  INDEX `fk_User_has_Chat_User1_idx` (`User_id` ASC) VISIBLE,
+  CONSTRAINT `fk_User_has_Chat_User1`
+    FOREIGN KEY (`User_id`)
+    REFERENCES `Odnoklasniki`.`User` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_User_has_Chat_Chat1`
+    FOREIGN KEY (`Chat_id` , `Chat_User_id`)
+    REFERENCES `Odnoklasniki`.`Chat` (`id` , `User_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
